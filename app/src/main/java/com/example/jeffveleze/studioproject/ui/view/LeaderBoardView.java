@@ -10,5 +10,6 @@ import java.util.ArrayList;
 public interface LeaderBoardView extends BaseView {
 
     void setupLeaderBoardWith(ArrayList<LeaderBoardUser> leaderBoardUsers);
+    void updateLeaderBoardWith(ArrayList<LeaderBoardUser> leaderBoardUsers);
 
 }

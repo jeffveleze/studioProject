@@ -1,24 +1,26 @@
 package com.example.jeffveleze.studioproject.ui.presenter;
 
+import android.os.Handler;
+import android.util.Log;
+
 import com.example.jeffveleze.studioproject.models.LeaderBoardItem;
 import com.example.jeffveleze.studioproject.models.LeaderBoardUser;
 import com.example.jeffveleze.studioproject.models.UserLog;
 import com.example.jeffveleze.studioproject.services.LeaderBoardInteractor;
 import com.example.jeffveleze.studioproject.ui.view.LeaderBoardView;
 
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
+import java.security.acl.LastOwnerException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.internal.operators.observable.ObservableFromArray;
 import io.reactivex.schedulers.Schedulers;
+
+import static com.example.jeffveleze.studioproject.utils.Constants.REFRESH_TIME_IN_SECONDS;
+import static com.example.jeffveleze.studioproject.utils.Constants.SECOND;
 
 /**
  * Created by jeffveleze on 11/4/17.
@@ -29,6 +31,10 @@ public class LeaderBoardPresenter {
     private LeaderBoardInteractor interactor;
     private CompositeDisposable disposables;
     private ArrayList<LeaderBoardUser> leaderBoardUsers;
+    private Timer refreshTimer;
+    private TimerTask timerTask;
+    private final Handler timerHandler = new Handler();
+    private int secondsCounter = 0;
 
     public LeaderBoardPresenter(LeaderBoardView view) {
         this.view = view;
@@ -51,7 +57,6 @@ public class LeaderBoardPresenter {
                 .subscribe(leaderBoardItems -> {
                             setBaseDataFor(leaderBoardItems);
                         }, throwable -> {
-                            System.out.println("");
                         }
 
                 ));
@@ -74,50 +79,99 @@ public class LeaderBoardPresenter {
     }
 
     private void loadLogs() {
-        final int[] numberOfUsers = {0};
+        final int[] numberOfUsersLoaded = {0};
 
         for (int index = 0; index < leaderBoardUsers.size(); index++) {
             String url = leaderBoardUsers.get(index).getUrlLogs();
-            int finalPosition = index;
+            int userIndex = index;
+            int logStartIndex = 0;
             disposables.add(interactor.getLogsFor(url)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeOn(Schedulers.io())
                     .subscribe(logs -> {
-                                numberOfUsers[0]++;
-                                leaderBoardUsers.get(finalPosition).setLogs(logs);
-                                handleLogsData(logs, finalPosition);
-
-                                if (numberOfUsers[0] == leaderBoardUsers.size()) {
-                                    sortListLeaderBoardUsers();
-                                    view.setupLeaderBoardWith(leaderBoardUsers);
+                                numberOfUsersLoaded[0]++;
+                                leaderBoardUsers.get(userIndex).setLogs(logs);
+                                handleLogsData(logs, userIndex, logStartIndex);
+                                if (numberOfUsersLoaded[0] == leaderBoardUsers.size()) {
+                                    handleLogsLoaded();
                                 }
                             }, throwable -> {
-                                System.out.println("");
                             }
                     ));
         }
     }
 
-    private void handleLogsData(ArrayList<UserLog> logs, int position) {
-        if (logs.get(0).getType().equals("HR")) {
-            leaderBoardUsers.get(position).setHeartRate(logs.get(0).getValue());
-        } else if (logs.get(0).getType().equals("D")) {
-            leaderBoardUsers.get(position).setDistance(Float.valueOf(logs.get(0).getValue()));
+    private void handleLogsData(ArrayList<UserLog> logs, int userIndex, int logIndex) {
+        if (logs.get(logIndex).getType().equals("HR")) {
+            leaderBoardUsers.get(userIndex).setHeartRate(logs.get(logIndex).getValue());
+        } else if (logs.get(logIndex).getType().equals("D")) {
+            leaderBoardUsers.get(userIndex).setDistance(Float.valueOf(logs.get(logIndex).getValue()));
         }
     }
 
-    public void sortListLeaderBoardUsers() {
+    private void handleLogsLoaded() {
+        sortListLeaderBoardUsers();
+        view.setupLeaderBoardWith(leaderBoardUsers);
+        startTimer();
+    }
 
+    private void sortListLeaderBoardUsers() {
         if (leaderBoardUsers.size() > 0) {
             Collections.sort(leaderBoardUsers, (leaderBoardUser, leaderBoardUserComparate)
                     -> leaderBoardUserComparate.getDistance().compareTo(leaderBoardUser.getDistance()));
         }
+    }
 
+    private void startTimer() {
+        secondsCounter = 0;
+        refreshTimer = new Timer();
+        startTimerTask();
+        refreshTimer.schedule(timerTask, 0, SECOND);
+    }
 
-        /*Timestamp stamp = new Timestamp(leaderBoardUsers.get(0).getLogs().get(0).getCurrentTimestamp());
-        Date date = new Date(stamp.getTime());
-        String format2 = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.ENGLISH).format(date);
-        System.out.println(format2);*/
+    private void startTimerTask() {
+        timerTask = new TimerTask() {
+            public void run() {
+                timerHandler.post(new Runnable() {
+                    public void run() {
+                        handleTriggeredEvent();
+                    }
+                });
+            }
+        };
+    }
+
+    private void stopTimerTask() {
+        if (refreshTimer != null) {
+            refreshTimer.cancel();
+            refreshTimer = null;
+        }
+    }
+
+    private void handleTriggeredEvent() {
+        secondsCounter ++;
+
+        if (secondsCounter % REFRESH_TIME_IN_SECONDS == 0) {
+            lookUpForUsersData();
+        }
+    }
+
+    private void lookUpForUsersData() {
+        for (int userIndex = 0; userIndex < leaderBoardUsers.size() ; userIndex++) {
+            ArrayList<UserLog> userLogs = leaderBoardUsers.get(userIndex).getLogs();
+            for (int logIndex = 0; logIndex < userLogs.size() ; logIndex++) {
+                if (userLogs.get(logIndex).getTimeInterval() == secondsCounter) {
+                    handleLogsData(userLogs, userIndex, logIndex);
+                }
+            }
+        }
+
+        updateLeaderBoard();
+    }
+
+    private void updateLeaderBoard() {
+        sortListLeaderBoardUsers();
+        view.updateLeaderBoardWith(leaderBoardUsers);
     }
 
 }
