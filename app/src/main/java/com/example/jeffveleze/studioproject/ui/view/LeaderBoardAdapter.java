@@ -71,6 +71,7 @@ public class LeaderBoardAdapter extends RecyclerView.Adapter<LeaderBoardAdapter.
         Picasso.with(context)
                 .load(user.getUrlAvatar())
                 .resize(80, 80)
+                .transform(new CircleTransform())
                 .centerCrop()
                 .into(viewHolder.avatarImage);
         viewHolder.distanceTextView.setText(user.getDistance() == null ? "0" : String.valueOf(user.getDistance()));

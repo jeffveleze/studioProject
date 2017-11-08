@@ -11,5 +11,10 @@ public interface LeaderBoardView extends BaseView {
 
     void setupLeaderBoardWith(ArrayList<LeaderBoardUser> leaderBoardUsers);
     void updateLeaderBoardWith(ArrayList<LeaderBoardUser> leaderBoardUsers);
+    void setupClassInformationWith(String instructorUrlImage,
+                                   String className,
+                                   String instructorName,
+                                   String remainingTime);
+    void updateRemainingTimeWith(String remainingTime);
 
 }

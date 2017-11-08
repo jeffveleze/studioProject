@@ -6,6 +6,7 @@ import android.util.Log;
 import com.example.jeffveleze.studioproject.models.LeaderBoardItem;
 import com.example.jeffveleze.studioproject.models.LeaderBoardUser;
 import com.example.jeffveleze.studioproject.models.UserLog;
+import com.example.jeffveleze.studioproject.models.Workout;
 import com.example.jeffveleze.studioproject.services.LeaderBoardInteractor;
 import com.example.jeffveleze.studioproject.ui.view.LeaderBoardView;
 
@@ -21,6 +22,7 @@ import io.reactivex.schedulers.Schedulers;
 
 import static com.example.jeffveleze.studioproject.utils.Constants.REFRESH_TIME_IN_SECONDS;
 import static com.example.jeffveleze.studioproject.utils.Constants.SECOND;
+import static com.example.jeffveleze.studioproject.utils.Constants.WORKOUT_SELECTED;
 
 /**
  * Created by jeffveleze on 11/4/17.
@@ -31,6 +33,7 @@ public class LeaderBoardPresenter {
     private LeaderBoardInteractor interactor;
     private CompositeDisposable disposables;
     private ArrayList<LeaderBoardUser> leaderBoardUsers;
+    private Workout selectedWorkout;
     private Timer refreshTimer;
     private TimerTask timerTask;
     private final Handler timerHandler = new Handler();
@@ -51,14 +54,25 @@ public class LeaderBoardPresenter {
     }
 
     public void getLeaderBoardList() {
-        disposables.add(interactor.getWorkouts().concatMap(workouts -> interactor.getLeaderBoardItemsFor(workouts.get(0).getId()))
+        disposables.add(interactor.getWorkouts()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(workouts -> {
+                            selectedWorkout = workouts.get(WORKOUT_SELECTED);
+                            getUsersFor(selectedWorkout.getId());
+                        }, throwable -> {
+                        }
+                ));
+    }
+
+    private void getUsersFor(int workoutId) {
+        disposables.add(interactor.getLeaderBoardItemsFor(workoutId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(leaderBoardItems -> {
                             setBaseDataFor(leaderBoardItems);
                         }, throwable -> {
                         }
-
                 ));
     }
 
@@ -111,7 +125,7 @@ public class LeaderBoardPresenter {
 
     private void handleLogsLoaded() {
         sortListLeaderBoardUsers();
-        view.setupLeaderBoardWith(leaderBoardUsers);
+        setUpView();
         startTimer();
     }
 
@@ -120,6 +134,14 @@ public class LeaderBoardPresenter {
             Collections.sort(leaderBoardUsers, (leaderBoardUser, leaderBoardUserComparate)
                     -> leaderBoardUserComparate.getDistance().compareTo(leaderBoardUser.getDistance()));
         }
+    }
+
+    private void setUpView() {
+        view.setupLeaderBoardWith(leaderBoardUsers);
+        view.setupClassInformationWith(selectedWorkout.getInstructor().getAvatarUrl(),
+                selectedWorkout.getName(),
+                selectedWorkout.getInstructor().getName(),
+                selectedWorkout.getDuration());
     }
 
     private void startTimer() {
