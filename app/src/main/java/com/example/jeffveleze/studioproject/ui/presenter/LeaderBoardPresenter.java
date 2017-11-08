@@ -1,5 +1,6 @@
 package com.example.jeffveleze.studioproject.ui.presenter;
 
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.Log;
 
@@ -11,10 +12,14 @@ import com.example.jeffveleze.studioproject.services.LeaderBoardInteractor;
 import com.example.jeffveleze.studioproject.ui.view.LeaderBoardView;
 
 import java.security.acl.LastOwnerException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -35,9 +40,8 @@ public class LeaderBoardPresenter {
     private ArrayList<LeaderBoardUser> leaderBoardUsers;
     private Workout selectedWorkout;
     private Timer refreshTimer;
-    private TimerTask timerTask;
-    private final Handler timerHandler = new Handler();
     private int secondsCounter = 0;
+    private int workoutDurationInSeconds = 0;
 
     public LeaderBoardPresenter(LeaderBoardView view) {
         this.view = view;
@@ -126,6 +130,7 @@ public class LeaderBoardPresenter {
     private void handleLogsLoaded() {
         sortListLeaderBoardUsers();
         setUpView();
+        formatWorkoutDuration();
         startTimer();
     }
 
@@ -144,23 +149,26 @@ public class LeaderBoardPresenter {
                 selectedWorkout.getDuration());
     }
 
-    private void startTimer() {
-        secondsCounter = 0;
-        refreshTimer = new Timer();
-        startTimerTask();
-        refreshTimer.schedule(timerTask, 0, SECOND);
+    private void formatWorkoutDuration() {
+        String time = selectedWorkout.getDuration();
+        String timeSplit[] = time.split(":");
+        workoutDurationInSeconds = Integer.parseInt(timeSplit[0]) * 60 * 60 +
+                Integer.parseInt(timeSplit[1]) * 60 +
+                Integer.parseInt(timeSplit[2]);
     }
 
-    private void startTimerTask() {
-        timerTask = new TimerTask() {
-            public void run() {
-                timerHandler.post(new Runnable() {
-                    public void run() {
-                        handleTriggeredEvent();
-                    }
-                });
+    private void startTimer() {
+        secondsCounter = 0;
+
+        new CountDownTimer(300000, SECOND) {
+            public void onTick(long millisUntilFinished) {
+                handleTriggeredEvent();
             }
-        };
+            public void onFinish() {
+                Log.d("seconds remaining: ", "done" );
+            }
+
+        }.start();
     }
 
     private void stopTimerTask() {
@@ -172,7 +180,7 @@ public class LeaderBoardPresenter {
 
     private void handleTriggeredEvent() {
         secondsCounter ++;
-
+        updateRemainingTimeInView();
         if (secondsCounter % REFRESH_TIME_IN_SECONDS == 0) {
             lookUpForUsersData();
         }
@@ -194,6 +202,13 @@ public class LeaderBoardPresenter {
     private void updateLeaderBoard() {
         sortListLeaderBoardUsers();
         view.updateLeaderBoardWith(leaderBoardUsers);
+    }
+
+    private void updateRemainingTimeInView() {
+        int remainingTime = workoutDurationInSeconds - secondsCounter;
+        long remainingTimeInMilliSeconds = remainingTime * 1000;
+        String date = new SimpleDateFormat("mm:ss").format(new Date(remainingTimeInMilliSeconds));
+        view.updateRemainingTimeWith(date);
     }
 
 }

@@ -96,7 +96,7 @@ public class LeaderBoardActivity extends BaseActivity implements LeaderBoardView
 
     @Override
     public void updateRemainingTimeWith(String remainingTime) {
-
+        this.remainingTime.setText(remainingTime);
     }
 
 }
