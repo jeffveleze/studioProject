@@ -73,7 +73,7 @@ public class LeaderBoardPresenter {
     }
 
     public void userWasSelectedIn(int userPosition) {
-        if (userPosition > 0 && userPosition < leaderBoardUsers.size())  {
+        if (userPosition >= 0 && userPosition < leaderBoardUsers.size())  {
             for (int userIndex = 0; userIndex < leaderBoardUsers.size() ; userIndex++) {
                 leaderBoardUsers.get(userIndex).setSelected(false);
             }
