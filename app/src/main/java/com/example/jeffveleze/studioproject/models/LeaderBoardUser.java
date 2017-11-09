@@ -1,5 +1,6 @@
 package com.example.jeffveleze.studioproject.models;
 
+import android.graphics.Color;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ public class LeaderBoardUser {
     private String heartRate;
     private Float distance = 0.0f;
     private ArrayList<UserLog> logs;
+    private Boolean isSelected = false;
 
     public String getName() {
         return name;
@@ -90,4 +92,9 @@ public class LeaderBoardUser {
     public void setLogs(ArrayList<UserLog> logs) {
         this.logs = logs;
     }
+
+    public Boolean getSelected() { return isSelected; }
+
+    public void setSelected(Boolean selected) { isSelected = selected; }
+
 }

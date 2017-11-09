@@ -1,9 +1,12 @@
 package com.example.jeffveleze.studioproject.ui.view;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -72,7 +75,24 @@ public class LeaderBoardActivity extends BaseActivity implements LeaderBoardView
         leadersAdapter = new LeaderBoardAdapter(this.leaderBoardUsers, LeaderBoardActivity.this);
         leadersRecycleView.setAdapter(leadersAdapter);
 
+        setupTouchEvent();
         hideProgressDialog();
+    }
+
+    private void setupTouchEvent() {
+        leadersRecycleView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+            @Override
+            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+                View child = rv.findChildViewUnder(e.getX(), e.getY());
+                int userPosition = rv.getChildLayoutPosition(child);
+                presenter.userWasSelectedIn(userPosition);
+                return false;
+            }
+            @Override
+            public void onTouchEvent(RecyclerView rv, MotionEvent e) {}
+            @Override
+            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {}
+        });
     }
 
     @Override
@@ -91,12 +111,12 @@ public class LeaderBoardActivity extends BaseActivity implements LeaderBoardView
                 .into(instructorImage);
         this.className.setText(className);
         this.instructorName.setText(instructorName);
-        this.remainingTime.setText(remainingTime);
+        this.remainingTime.setText("Time: " + remainingTime);
     }
 
     @Override
     public void updateRemainingTimeWith(String remainingTime) {
-        this.remainingTime.setText(remainingTime);
+        this.remainingTime.setText("Time: " + remainingTime);
     }
 
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/user_container"
     android:layout_width="match_parent"
     android:layout_height="100dp"
     android:orientation="horizontal">
@@ -12,9 +13,11 @@
         android:layout_marginLeft="5dp"
         android:layout_marginStart="5dp"
         android:layout_weight="1"
+        android:textAlignment="viewEnd"
         android:gravity="center_vertical"
         android:text="#1"
-        android:textSize="25sp" />
+        android:textSize="25sp"
+        android:textStyle="bold" />
 
     <FrameLayout
         android:layout_width="0dp"
@@ -37,7 +40,8 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_marginLeft="5dp"
-        android:layout_weight="4"
+        android:layout_marginStart="5dp"
+        android:layout_weight="4.5"
         android:gravity="center_vertical"
         android:orientation="vertical">
 
@@ -45,9 +49,11 @@
             android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLength="15"
             android:maxLines="1"
             android:text="asdasd"
-            android:textSize="20sp" />
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/gender_and_location"
@@ -55,7 +61,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/name"
             android:maxLines="1"
-            android:text="asdasdasdasd" />
+            android:text="asdasdasdasd"
+            android:textSize="12sp" />
 
     </LinearLayout>
 
@@ -65,7 +72,7 @@
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
         android:layout_marginStart="5dp"
-        android:layout_weight="3"
+        android:layout_weight="2.5"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -76,22 +83,21 @@
 
             <TextView
                 android:id="@+id/distance"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="7"
                 android:ellipsize="end"
                 android:maxLength="4"
                 android:maxLines="1"
                 android:text="45"
-                android:textSize="25sp" />
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/distance_units"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_marginStart="5dp"
-                android:layout_weight="3"
                 android:text="km"
                 android:textSize="15sp" />
 
@@ -110,13 +116,15 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="75"
-                android:textSize="25sp" />
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/heart_rate_units"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
                 android:text="HR"
                 android:textSize="15sp" />
 

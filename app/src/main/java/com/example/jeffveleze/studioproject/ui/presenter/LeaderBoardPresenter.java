@@ -1,14 +1,17 @@
 package com.example.jeffveleze.studioproject.ui.presenter;
 
+import android.graphics.Color;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.Log;
 
+import com.example.jeffveleze.studioproject.R;
 import com.example.jeffveleze.studioproject.models.LeaderBoardItem;
 import com.example.jeffveleze.studioproject.models.LeaderBoardUser;
 import com.example.jeffveleze.studioproject.models.UserLog;
 import com.example.jeffveleze.studioproject.models.Workout;
 import com.example.jeffveleze.studioproject.services.LeaderBoardInteractor;
+import com.example.jeffveleze.studioproject.ui.view.LeaderBoardActivity;
 import com.example.jeffveleze.studioproject.ui.view.LeaderBoardView;
 
 import java.security.acl.LastOwnerException;
@@ -67,6 +70,16 @@ public class LeaderBoardPresenter {
                         }, throwable -> {
                         }
                 ));
+    }
+
+    public void userWasSelectedIn(int userPosition) {
+        if (userPosition > 0 && userPosition < leaderBoardUsers.size())  {
+            for (int userIndex = 0; userIndex < leaderBoardUsers.size() ; userIndex++) {
+                leaderBoardUsers.get(userIndex).setSelected(false);
+            }
+            leaderBoardUsers.get(userPosition).setSelected(true);
+            view.updateLeaderBoardWith(leaderBoardUsers);
+        }
     }
 
     private void getUsersFor(int workoutId) {

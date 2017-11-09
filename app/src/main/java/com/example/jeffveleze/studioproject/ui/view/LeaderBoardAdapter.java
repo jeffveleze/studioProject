@@ -1,13 +1,18 @@
 package com.example.jeffveleze.studioproject.ui.view;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.media.Image;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.Layout;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.jeffveleze.studioproject.R;
@@ -33,6 +38,7 @@ public class LeaderBoardAdapter extends RecyclerView.Adapter<LeaderBoardAdapter.
         private TextView distanceUnitsTextView;
         private TextView heartRateTextView;
         private TextView heartRateUnitsTextView;
+        private LinearLayout userContainer;
 
         private ViewHolder(View itemView) {
             super(itemView);
@@ -45,6 +51,7 @@ public class LeaderBoardAdapter extends RecyclerView.Adapter<LeaderBoardAdapter.
             distanceUnitsTextView = (TextView) itemView.findViewById(R.id.distance_units);
             heartRateTextView = (TextView) itemView.findViewById(R.id.heart_rate);
             heartRateUnitsTextView = (TextView) itemView.findViewById(R.id.heart_rate_units);
+            userContainer = (LinearLayout) itemView.findViewById(R.id.user_container);
         }
     }
 
@@ -76,6 +83,11 @@ public class LeaderBoardAdapter extends RecyclerView.Adapter<LeaderBoardAdapter.
                 .into(viewHolder.avatarImage);
         viewHolder.distanceTextView.setText(user.getDistance() == null ? "0" : String.valueOf(user.getDistance()));
         viewHolder.heartRateTextView.setText(user.getHeartRate() == null ? "0" : user.getHeartRate());
+
+        int highLightedColor = context.getResources().getColor(R.color.selectedUser);
+        boolean shouldHighlight = user.getSelected();
+        int backgroundColor = shouldHighlight ? highLightedColor : Color.TRANSPARENT;
+        viewHolder.userContainer.setBackgroundColor(backgroundColor);
     }
 
     @Override
