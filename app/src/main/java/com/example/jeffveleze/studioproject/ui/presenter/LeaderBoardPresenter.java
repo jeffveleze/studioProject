@@ -28,6 +28,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
 
+import static com.example.jeffveleze.studioproject.utils.Constants.DISTANCE_KEY;
+import static com.example.jeffveleze.studioproject.utils.Constants.HR_KEY;
 import static com.example.jeffveleze.studioproject.utils.Constants.REFRESH_TIME_IN_SECONDS;
 import static com.example.jeffveleze.studioproject.utils.Constants.SECOND;
 import static com.example.jeffveleze.studioproject.utils.Constants.WORKOUT_SELECTED;
@@ -42,7 +44,6 @@ public class LeaderBoardPresenter {
     private CompositeDisposable disposables;
     private ArrayList<LeaderBoardUser> leaderBoardUsers;
     private Workout selectedWorkout;
-    private Timer refreshTimer;
     private int secondsCounter = 0;
     private int workoutDurationInSeconds = 0;
 
@@ -133,9 +134,9 @@ public class LeaderBoardPresenter {
     }
 
     private void handleLogsData(ArrayList<UserLog> logs, int userIndex, int logIndex) {
-        if (logs.get(logIndex).getType().equals("HR")) {
+        if (logs.get(logIndex).getType().equals(HR_KEY)) {
             leaderBoardUsers.get(userIndex).setHeartRate(logs.get(logIndex).getValue());
-        } else if (logs.get(logIndex).getType().equals("D")) {
+        } else if (logs.get(logIndex).getType().equals(DISTANCE_KEY)) {
             leaderBoardUsers.get(userIndex).setDistance(Float.valueOf(logs.get(logIndex).getValue()));
         }
     }
@@ -173,22 +174,15 @@ public class LeaderBoardPresenter {
     private void startTimer() {
         secondsCounter = 0;
 
-        new CountDownTimer(300000, SECOND) {
+        new CountDownTimer(workoutDurationInSeconds * 1000, SECOND) {
             public void onTick(long millisUntilFinished) {
                 handleTriggeredEvent();
             }
             public void onFinish() {
-                Log.d("seconds remaining: ", "done" );
+                secondsCounter = 0;
             }
 
         }.start();
-    }
-
-    private void stopTimerTask() {
-        if (refreshTimer != null) {
-            refreshTimer.cancel();
-            refreshTimer = null;
-        }
     }
 
     private void handleTriggeredEvent() {

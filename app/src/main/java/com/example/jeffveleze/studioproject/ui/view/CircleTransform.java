@@ -11,6 +11,8 @@ import android.graphics.Paint;
 
 import com.squareup.picasso.Transformation;
 
+import static com.example.jeffveleze.studioproject.utils.Constants.CIRCLE_KEY;
+
 public class CircleTransform implements Transformation {
 
     @Override
@@ -43,6 +45,6 @@ public class CircleTransform implements Transformation {
 
     @Override
     public String key() {
-        return "circle";
+        return CIRCLE_KEY;
     }
 }

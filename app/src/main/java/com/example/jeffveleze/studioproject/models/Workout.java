@@ -22,8 +22,6 @@ public class Workout {
     @SerializedName("is_welcome_run") private Boolean isWelcomeRun;
     @SerializedName("users_took") private Integer usersTook;
     private Instructor instructor;
-    private Audio audio;
-    @SerializedName("top_users") private ArrayList<TopUser> topUsers = null;
 
     public Integer getId() {
         return id;
@@ -119,22 +117,6 @@ public class Workout {
 
     public void setInstructor(Instructor instructor) {
         this.instructor = instructor;
-    }
-
-    public Audio getAudio() {
-        return audio;
-    }
-
-    public void setAudio(Audio audio) {
-        this.audio = audio;
-    }
-
-    public ArrayList<TopUser> getTopUsers() {
-        return topUsers;
-    }
-
-    public void setTopUsers(ArrayList<TopUser> topUsers) {
-        this.topUsers = topUsers;
     }
 
 }

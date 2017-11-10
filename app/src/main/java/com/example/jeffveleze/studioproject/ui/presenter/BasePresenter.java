@@ -5,7 +5,7 @@ import com.example.jeffveleze.studioproject.ui.view.BaseView;
 /**
  * Created by jeffveleze on 11/4/17.
  */
-public class BasePresenter <T extends BaseView> implements Presenter<T> {
+public class BasePresenter <T extends BaseView> implements LeaderBoardPresenterInterface<T> {
     private T view;
 
     @Override
@@ -33,8 +33,8 @@ public class BasePresenter <T extends BaseView> implements Presenter<T> {
     public static class MvpViewNotAttachedException extends RuntimeException {
 
         public MvpViewNotAttachedException() {
-            super("Please call Presenter.attachView(BaseView) before" +
-                    " requesting data to the Presenter");
+            super("Please call LeaderBoardPresenterInterface.attachView(BaseView) before" +
+                    " requesting data to the LeaderBoardPresenterInterface");
         }
     }
 }

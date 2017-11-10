@@ -111,12 +111,12 @@ public class LeaderBoardActivity extends BaseActivity implements LeaderBoardView
                 .into(instructorImage);
         this.className.setText(className);
         this.instructorName.setText(instructorName);
-        this.remainingTime.setText("Time: " + remainingTime);
+        this.remainingTime.setText(getText(R.string.time) + " " + remainingTime);
     }
 
     @Override
     public void updateRemainingTimeWith(String remainingTime) {
-        this.remainingTime.setText("Time: " + remainingTime);
+        this.remainingTime.setText(getText(R.string.time) + " " + remainingTime);
     }
 
 }

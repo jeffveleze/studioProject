@@ -7,6 +7,8 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
+import com.example.jeffveleze.studioproject.R;
+
 /**
  * Created by jeffveleze on 11/4/17.
  */
@@ -43,7 +45,7 @@ public class BaseActivity extends AppCompatActivity implements BaseView {
 
     @Override
     public void showProgressDialog() {
-        progressDialog.setMessage("Espere por favor");
+        progressDialog.setMessage(getString(R.string.wait_please));
         progressDialog.show();
     }
 
@@ -54,9 +56,9 @@ public class BaseActivity extends AppCompatActivity implements BaseView {
 
     @Override
     public void showAlertDialog(String message) {
-        alertDialog.setTitle("Señor usuario");
+        alertDialog.setTitle(getText(R.string.dear_user));
         alertDialog.setMessage(message);
-        alertDialog.setNegativeButton("Aceptar", new DialogInterface.OnClickListener() {
+        alertDialog.setNegativeButton(getText(R.string.accept), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 dialogInterface.dismiss();

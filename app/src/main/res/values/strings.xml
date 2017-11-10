@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">StudioProject</string>
+    <string name="app_name">Studio</string>
+    <string name="wait_please">Wait please</string>
+    <string name="dear_user">Dear User</string>
+    <string name="accept">Accept</string>
+    <string name="time">Time:</string>
 </resources>
